@@ -2,6 +2,7 @@
 wrapper used to chain native Promises in an async sequence
 _________________________________________________________
 [![impossible-promise on NPM](https://img.shields.io/npm/v/impossible-promise.svg)](https://www.npmjs.com/package/impossible-promise)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/56f2453cfeb64d1c852e98eb25b684e6)](https://www.codacy.com/app/entomb/impossible-promise)
 [![Build Status](https://travis-ci.org/iampossible/impossible-promise.svg?branch=master)](https://travis-ci.org/iampossible/impossible-promise)
 
 
