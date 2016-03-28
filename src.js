@@ -14,6 +14,7 @@ class ImpossiblePromise {
 
         process.nextTick(() => {
             this._promise = new Promise(fn).catch(this._ups);
+            this._stack.push(this._promise);
         });
     }
 
