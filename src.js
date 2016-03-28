@@ -6,7 +6,7 @@ class ImpossiblePromise {
         this._stack = [];
         this._data  = [];
         this._done = false;
-        this._ups = function(reason){/* noop! */};
+        this._ups = function(){/* noop! */};
 
         if(!fn){
           throw new Error("ImpossiblePromise(:Function) requires a function to start a sequence");
@@ -23,7 +23,7 @@ class ImpossiblePromise {
         }
 
         process.nextTick(function() {
-            this._promise = this._promise.then((value) =>{
+            this._promise = this._promise.then((value) => {
                 this._data.push(value);
                 return new Promise((done,err) => fn.apply(null, [done, err, value])).catch(this._ups);
             });
@@ -33,7 +33,7 @@ class ImpossiblePromise {
     }
 
     done (fn){
-        this.then((done,err,value) => {
+        this.then((done,err) => {
             fn.apply(null, this._data);
         });
 
