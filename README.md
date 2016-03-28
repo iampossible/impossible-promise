@@ -1,12 +1,12 @@
 # (IM)POSSIBLE PROMISE
 wrapper used to chain native Promises in an async sequence
 
-# Instal from NPM
+## Instal from NPM
 _requires node -v >4.3.2 (for Promises support)_ 
 
     $ npm install impossible-promise
 
-# Usage:
+## Usage:
 use `new sequence()` and `.then()` to chain promises
 use `.done()` to fetch all results
 ```js
@@ -24,10 +24,10 @@ new sequence((next,reject) => {
 });
 ```
 
-# Documentation
-__todo__: check test.js for examples
+## Documentation
+__check test.js for examples__
 
-# TODO:
+## TODO:
 - [ ] propper documentation
 - [ ] backwards compatibility
 - [ ] browser compatibility
