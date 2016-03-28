@@ -6,9 +6,9 @@ class ImpossiblePromise {
         this._stack = [];
         this._data  = [];
         this._done = false;
-        this._ups = function() {/* noop! */};
+        this._ups = function() { /* noop! */ };
 
-        if (typeof(fn) !== 'function') {
+        if (typeof fn !== 'function') {
           throw new Error('ImpossiblePromise(:Function) requires a function to start a sequence');
         }
 
@@ -18,7 +18,7 @@ class ImpossiblePromise {
     }
 
     then(fn) {
-        if (this._done===true) {
+        if (this._done === true) {
             return new ImpossiblePromise(fn);
         }
 
