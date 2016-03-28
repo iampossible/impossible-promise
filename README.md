@@ -1,8 +1,9 @@
 # (IM)POSSIBLE PROMISE
+[![Build Status](https://travis-ci.org/iampossible/impossible-promise.svg?branch=master)](https://travis-ci.org/iampossible/impossible-promise)
 wrapper used to chain native Promises in an async sequence
 
 ## Instal from NPM
-_requires node -v >4.3.2 (for Promises support)_ 
+_requires node -v >4.3.2 (for Promises support)_
 
     $ npm install impossible-promise
 
@@ -34,3 +35,6 @@ __check test.js for examples__
 - [ ] support for `Promise.race()`
 - [ ] support for `Promise.all()`
 - [ ] write a CONTRIBUTING.file
+
+## LICENSE
+MIT, see [LICENSE](../blob/master/LICENSE) for details.
