@@ -28,6 +28,6 @@ __todo__: check test.js for examples
 
 # TODO:
 - [ ] propper documentation
-- [ ] suport for `Promise.race()`
-- [ ] suport for `Promise.all()`
+- [ ] support for `Promise.race()`
+- [ ] support for `Promise.all()`
 - [ ] write a CONTRIBUTING.file
