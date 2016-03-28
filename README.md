@@ -10,18 +10,18 @@ _requires node -v >4.3.2 (for Promises support)_
 use `new sequence()` and `.then()` to chain promises
 use `.done()` to fetch all results
 ```js
-    var sequence = require("impossible-promise)
+var sequence = require("impossible-promise")
 
-    new sequence((next,reject) => {
-        next("giving");
-    }).then((next,reject) => {
-        setTimeout(() => next("is") , 1000);
-    }).then((next,reject) => {
-        next("caring!");
-    }).done((a,b,c) => {
-        console.log([a,b,c].join(" "));
-        // => giving is caring!
-    });
+new sequence((next,reject) => {
+    next("giving");
+}).then((next,reject) => {
+    setTimeout(() => next("is") , 1000);
+}).then((next,reject) => {
+    next("caring!");
+}).done((a,b,c) => {
+    console.log([a,b,c].join(" "));
+    // => giving is caring!
+});
 ```
 
 # Documentation
