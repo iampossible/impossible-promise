@@ -1,6 +1,9 @@
 # (IM)POSSIBLE PROMISE
-[![Build Status](https://travis-ci.org/iampossible/impossible-promise.svg?branch=master)](https://travis-ci.org/iampossible/impossible-promise)
 wrapper used to chain native Promises in an async sequence
+_________________________________________________________
+[![impossible-promise on NPM](https://img.shields.io/npm/v/impossible-promise.svg)](https://www.npmjs.com/package/impossible-promise)
+[![Build Status](https://travis-ci.org/iampossible/impossible-promise.svg?branch=master)](https://travis-ci.org/iampossible/impossible-promise)
+
 
 ## Instal from NPM
 _requires node -v >4.3.2 (for Promises support)_
