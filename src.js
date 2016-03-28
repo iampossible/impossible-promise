@@ -33,8 +33,9 @@ class ImpossiblePromise {
     }
 
     done (fn){
-        this.then((done,err) => {
+        this.then((done) => {
             fn.apply(null, this._data);
+            done();
         });
 
         this._done = true;
