@@ -1,21 +1,21 @@
 "use strict";
 /*globals describe it*/
 
-const sequence = require("./src.js");
+const Sequence = require("./src.js");
 const assert = require('assert');
 
-describe("new sequence()", () => {
+describe("new Sequence()", () => {
     describe(".then() method", () => {
 
         it("missing .then() but should execute", (done) => {
-            new sequence((next,err) => {
+            new Sequence((next,err) => {
                 assert(true);
                 done();
             });
         });
 
         it("single call stack", (done) => {
-            new sequence((next,err) => {
+            new Sequence((next,err) => {
                 next();
             }).then((next,err) => {
                 assert(true);
@@ -24,7 +24,7 @@ describe("new sequence()", () => {
         });
 
         it("multi call stack", (done) => {
-            new sequence((next,err) => {
+            new Sequence((next,err) => {
                 next();
             }).then((next,err) => {
                 assert(true);
@@ -39,7 +39,7 @@ describe("new sequence()", () => {
         });
 
         it("passing single argument", (done) => {
-            new sequence((next,err) => {
+            new Sequence((next,err) => {
                 next("value");
             }).then((next,err,value) => {
                 assert.equal(value,"value");
@@ -48,7 +48,7 @@ describe("new sequence()", () => {
         });
 
         it("passing single argument on multi stacks", (done) => {
-            new sequence((next,err) => {
+            new Sequence((next,err) => {
                 next("hello");
             }).then((next,err,value) => {
                 assert.equal(value,"hello");
@@ -63,7 +63,7 @@ describe("new sequence()", () => {
         });
 
         it("later .then()", (done) => {
-            var later = new sequence((next,err) => {
+            var later = new Sequence((next,err) => {
                 next("aligator");
             });
 
@@ -82,7 +82,7 @@ describe("new sequence()", () => {
     describe(".error() method", () => {
 
         it("shoudl call error on rejected promise", (done) => {
-            new sequence((accept,reject) => {
+            new Sequence((accept,reject) => {
                 reject("ups!");
             }).then((next,err) => {
                 //this should not be called
@@ -97,7 +97,7 @@ describe("new sequence()", () => {
         });
 
         it("using .then() after .error() should continue the sequence", (done) => {
-            new sequence((next) => {
+            new Sequence((next) => {
                 next();
             }).error((reason) => {
                 assert.equal(reason,"ups!");
@@ -108,7 +108,7 @@ describe("new sequence()", () => {
         });
 
         it("only the last .error() should count", (done) => {
-            new sequence((next) => {
+            new Sequence((next) => {
                 next();
             }).error((reason) => {
                 assert.equal(reason,"not me!");
@@ -124,7 +124,7 @@ describe("new sequence()", () => {
 
 
         it("any rejected promise shoudl interrupt the sequence", (done) => {
-            new sequence((next) => {
+            new Sequence((next) => {
                 next();
             }).error((reason) => {
                 assert.equal(reason,"ups!");
@@ -141,7 +141,7 @@ describe("new sequence()", () => {
         });
 
          it("should catch exceptions and call .error()", (done) => {
-            new sequence((next,reject) => {
+            new Sequence((next,reject) => {
                 throw 'ups!';
             }).error((reason) => {
                 assert.equal(reason,"ups!");
@@ -155,7 +155,7 @@ describe("new sequence()", () => {
     describe(".done() method", () => {
 
         it("should have an argument for each next() called", (done) => {
-            new sequence((next,reject) => {
+            new Sequence((next,reject) => {
                 next("hello");
             }).then((next,reject) => {
                 next("world");
@@ -171,7 +171,7 @@ describe("new sequence()", () => {
 
 
         it("should not be done if there is an error", (done) => {
-            new sequence((next,reject) => {
+            new Sequence((next,reject) => {
                 next("hello");
             }).then((next,reject) => {
                 reject("world");
@@ -187,8 +187,8 @@ describe("new sequence()", () => {
         });
 
 
-        it("should start a new sequence if .then() is used after .done()", (done) => {
-            new sequence((next,reject) => {
+        it("should start a new Sequence if .then() is used after .done()", (done) => {
+            new Sequence((next,reject) => {
                 next("hello");
             }).done((hello) => {
                 assert.equal("hello",hello);
@@ -201,5 +201,133 @@ describe("new sequence()", () => {
         });
 
     });
+
+
+   describe(".promisify() method", () => {
+
+        var fn_NodeCallback = function(a, b, callback){
+            setTimeout(()=>{
+                callback(false,a+b);
+            },100)
+        }
+
+        var fn_NodeCallbackError = function(a, b, callback){
+            throw "custom error";
+        }
+
+        it("should promisify node style callbacks", (done) => {
+            new Sequence((next,reject) => {
+                next("hello");
+            })
+            .promisify(fn_NodeCallback, 5, 6)
+            .done((hello, result)=>{
+                assert.equal("hello",hello);
+                assert.equal(result,11);
+                done()
+            })
+
+        });
+
+        it("should promisify node style error callbacks", (done) => {
+
+            new Sequence((next,reject) => {
+                next("hello");
+            })
+            .promisify(fn_NodeCallbackError, 5, 6)
+            .error(e => {
+                assert.equal("custom error", e);
+                done()
+            })
+            .done((hello, result)=>{
+                //this should not be run
+                assert.equal(false,true);
+            })
+
+        });
+
+    });
+
+
+     describe(".pipe() method", () => {
+
+        var fn_pipe = function(value){
+            return (value*2);
+        }
+
+        var fn_pipeCallback = function(value, callback){
+            setTimeout(()=>{
+                callback(value*2);
+            },100)
+        }
+
+        var fn_pipeCallbackFalse = function(value, callback){
+            setTimeout(()=>{
+                callback(false);
+            },100)
+        }
+
+        var fn_pipeCallbackError = function(value,callback){
+            throw "custom error";
+        }
+
+        it("should pipe callbacks", (done) => {
+            new Sequence((next,reject) => {
+                next(5);
+            })
+            .pipe(fn_pipeCallback)
+            .done((five, result)=>{
+                assert.equal(5,five);
+                assert.equal(result,10);
+                done()
+            })
+        });
+
+        it("should pipe returns", (done) => {
+            new Sequence((next,reject) => {
+                next(4);
+            })
+            .pipe(fn_pipe)
+            .done((five, result)=>{
+                assert.equal(4,five);
+                assert.equal(result,8);
+                done()
+            })
+        });
+
+        it("should catch simple callback error", (done) => {
+
+            new Sequence((next,reject) => {
+                next("hello");
+            })
+            .pipe(fn_pipeCallbackError)
+            .error(e => {
+                assert.equal("custom error", e);
+                done()
+            })
+            .done((hello, result)=>{
+                //this should not be run
+                assert.equal(false,true);
+            })
+
+        });
+
+        it("should refuse if result===false", (done) => {
+
+            new Sequence((next,reject) => {
+                next("hello");
+            })
+            .pipe(fn_pipeCallbackError)
+            .error(e => {
+                assert.equal("custom error", e);
+                done()
+            })
+            .done((hello, result)=>{
+                //this should not be run
+                assert.equal(false,true);
+            })
+
+        });
+
+     })
 
 });
