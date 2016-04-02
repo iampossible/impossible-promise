@@ -47,44 +47,50 @@ class ImpossiblePromise {
 
     promisify(fn) {
         let inArgs = Array.prototype.slice.call(arguments);
-            inArgs.shift();
 
         if (typeof fn !== 'function') {
-          throw new Error('ImpossiblePromise.promisify(:Function) requires a function(err,...)');
+            throw new Error('ImpossiblePromise.promisify(:Function) requires a function(err,...)');
         }
 
-       return this.then((accept,reject) => {
-           inArgs.push(function cb(){
-               let cbArgs = Array.prototype.slice.call(arguments);
-                if (cbArgs.length==0){
+        return this.then((accept, reject) => {
+            inArgs.shift();
+            inArgs.push(function cb() {
+                let cbArgs = Array.prototype.slice.call(arguments);
+                let err = cbArgs.shift();
+
+                if (cbArgs.length === 0) {
                     throw new Error('ImpossiblePromise.promisify(:Function) requires a function(err,...)');
                 }
-                var err = cbArgs.shift();
-                if (!!err) {
-                    reject(err)
-                }else{
-                    accept(cbArgs.length==1 ? cbArgs : [cbArgs]);
+
+                if (err) {
+                    reject(err);
+                } else {
+                    accept(cbArgs);
                 }
            });
 
-           fn.apply(null,inArgs);
-       });
+           fn.apply(null, inArgs);
+        });
     }
 
 
     pipe(fn) {
         if (typeof fn !== 'function') {
-          throw new Error('ImpossiblePromise.pipe(:Function) requires a function(input,callback)');
+           throw new Error('ImpossiblePromise.pipe(:Function) requires a function(input,callback)');
         }
 
-       return this.then((accept,reject,value) => {
-           if(fn.length==2){//->callback function
-            fn.call(null,value,function(result){
-               if(result === false) reject();
-               accept(result);
-            });
-           }else{ //->return function
+        return this.then((accept,reject,value) => {
+            if(fn.length===2){//->callback function
+                fn.call(null, value, function(result){
+                    if (result === false || result === null){
+                       reject();
+                    } else {
+                        accept(result);
+                    }
+                });
+            } else { //->return function
                let result = fn.call(null,value);
+
                if(result === false) reject();
                accept(result);
            }
