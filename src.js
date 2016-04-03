@@ -79,19 +79,19 @@ class ImpossiblePromise {
            throw new Error('ImpossiblePromise.pipe(:Function) requires a function(input,callback)');
         }
 
-        return this.then((accept,reject,value) => {
-            if(fn.length===2){//->callback function
-                fn.call(null, value, function(result){
-                    if (result === false || result === null){
+        return this.then((accept, reject, value) => {
+            if (fn.length === 2) {//->callback function
+                fn.call(null, value, function(result) {
+                    if (result === false || result === null) {
                        reject();
                     } else {
                         accept(result);
                     }
                 });
             } else { //->return function
-               let result = fn.call(null,value);
+               let result = fn.call(null, value);
 
-               if(result === false) reject();
+               if (result === false) reject();
                accept(result);
            }
        });
