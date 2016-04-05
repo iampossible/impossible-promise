@@ -30,17 +30,23 @@ class ImpossiblePromise {
      *
      */
     then(fn) {
-        if (this._done === true) {
-            return new ImpossiblePromise(fn);
+
+        if (typeof fn !== 'function') {
+           throw new Error('ImpossiblePromise.then(:Function) requires s function(accept, reject, value)');
         }
 
         process.nextTick( () => {
             this._promise = this._promise.then( value => {
-                this._data.push(value);
+                if (this._done === true || typeof value === "undefined" || value === null ) {
+                    this._done = false;
+                }else{
+                    this._data.push(value);
+                }
                 return new Promise((done, err) => fn.apply(null, [done, err, value])).catch(this._ups);
             });
             this._stack.push(this._promise);
         });
+
         return this;
     }
 
@@ -102,13 +108,21 @@ class ImpossiblePromise {
      *
      */
     done(fn) {
-        this.then( done => {
-            fn.apply(null, this._data);
-            done();
-        });
+        if (typeof fn !== 'function') {
+           throw new Error('ImpossiblePromise.done(:Function) requires a syncronous function()');
+        }
 
-        this._done = true;
-        return this;
+        return this.then((done, err, something) => {
+            if (this._data.length === 0) {
+                this._data.push(something)
+            }
+            var result = fn.apply(null, this._data);
+
+            this._data = [];
+            this._stack = [];
+            this._done = true;
+            done(result || null);
+        });
     }
 
 

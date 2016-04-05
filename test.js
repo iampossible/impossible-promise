@@ -5,7 +5,7 @@ const Sequence = require("./src.js");
 const assert = require('assert');
 
 describe("new Sequence()", () => {
-    describe(".then() method", () => {
+  describe(".then() method", () => {
 
         it("missing .then() but should execute", (done) => {
             new Sequence((next,err) => {
@@ -192,13 +192,41 @@ describe("new Sequence()", () => {
                 next("hello");
             }).done((hello) => {
                 assert.equal("hello",hello);
-            }).then((next,reject) => {
+                return "something"
+            }).then((next,reject,something) => {
+                assert.equal("something",something);
                 next("world");
-            }).done((world) => {
+            }).done((world,a,b) => {
                 assert.equal("world",world);
                 done();
             });
         });
+
+
+        it(".then() after done should carry over .done() return value", (done) => {
+            new Sequence((next,reject) => {
+                next("hello");
+            }).done((hello) => {
+                assert.equal("hello",hello);
+                return hello+" world";
+            }).then((next, reject, helloworld) => {
+                assert.equal("hello world",helloworld);
+                done();
+            });
+        });
+
+        it(".done() after done should carry over .done() return value", (done) => {
+            new Sequence((next,reject) => {
+                next("hello");
+            }).done((hello) => {
+                assert.equal("hello",hello);
+                return hello+" world";
+            }).done((helloworld) => {
+                assert.equal("hello world",helloworld);
+                done();
+            }).error(e => console.log(e));
+        });
+
 
     });
 
@@ -329,5 +357,6 @@ describe("new Sequence()", () => {
         });
 
      })
+
 
 });
