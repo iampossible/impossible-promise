@@ -37,7 +37,7 @@ class ImpossiblePromise {
 
         process.nextTick( () => {
             this._promise = this._promise.then( value => {
-                if (this._done === true || typeof value === "undefined" || value === null ) {
+                if (this._done === true || typeof value === "undefined") {
                     this._done = false;
                 }else{
                     this._data.push(value);
