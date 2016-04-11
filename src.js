@@ -15,14 +15,18 @@ class ImpossiblePromise {
     this._done = false;
     this._ups = function() { /* noop! */ };
 
-    if (typeof fn !== 'function') {
-      throw new Error('ImpossiblePromise(:Function) requires a function to start a sequence');
+    if(typeof fn === 'undefined' || fn === null){
+      process.nextTick(() => {
+        this._promise = new Promise((a) => a());
+      });
+    }else if (typeof fn === 'function') {
+      process.nextTick(() => {
+        this._promise = new Promise(fn).catch(this._ups);
+        this._stack.push(this._promise);
+      });
+    }else{
+       throw new Error('ImpossiblePromise(:Function) requires a function to start a sequence');
     }
-
-    process.nextTick(() => {
-      this._promise = new Promise(fn).catch(this._ups);
-      this._stack.push(this._promise);
-    });
   }
 
   /**
@@ -30,6 +34,7 @@ class ImpossiblePromise {
    *
    */
   then(fn) {
+
     if(fn instanceof ImpossiblePromise){
       //chains another ImpossibePromise
       this.then((accept,reject) => {

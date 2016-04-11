@@ -5,6 +5,48 @@ const Sequence = require("./src.js");
 const assert = require('assert');
 
 describe("new Sequence()", () => {
+
+  describe('constructor', () => {
+    it("should accept null as a start sequence", (done) => {
+      new Sequence()
+        .then((accept, reject, nullValue) => {
+          assert.equal(typeof nullValue, "undefined");
+          accept("just this one");
+        }).done((justThisOnde) => {
+          assert.equal(justThisOnde, "just this one");
+          done();
+        });
+    });
+
+    it("should be able to chain other methods", (done) => {
+
+      var someMethod = function(){
+        return new Sequence((accept, reject) => {
+          setTimeout(function() {
+            accept("some")
+          },100)
+        })
+      }
+
+      var otherMethod = function(){
+        return new Sequence((accept, reject) => {
+          setTimeout(function() {
+            accept("other")
+          },100)
+        })
+      }
+
+      new Sequence()
+        .then(someMethod())
+        .then(otherMethod())
+        .done((some, other) => {
+          assert.equal([some, other].join(" "), "some other");
+          done();
+        });
+
+    });
+  });
+
   describe(".then() method", () => {
 
         it("missing .then() but should execute", (done) => {
