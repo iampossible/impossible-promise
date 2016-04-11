@@ -30,22 +30,28 @@ class ImpossiblePromise {
      *
      */
     then(fn) {
-
-        if (typeof fn !== 'function') {
-           throw new Error('ImpossiblePromise.then(:Function) requires s function(accept, reject, value)');
-        }
-
-        process.nextTick( () => {
-            this._promise = this._promise.then( value => {
-                if (this._done === true || typeof value === "undefined") {
-                    this._done = false;
-                }else{
-                    this._data.push(value);
-                }
-                return new Promise((done, err) => fn.apply(null, [done, err, value])).catch(this._ups);
+        if(fn instanceof ImpossiblePromise){
+            //chains another ImpossibePromise
+            this.then((accept,reject) => {
+                fn.then((innerAccept, innerReject, lastValue) => {
+                    accept(lastValue);
+                });
             });
-            this._stack.push(this._promise);
-        });
+        } else if (typeof fn === 'function') {
+            process.nextTick( () => {
+              this._promise = this._promise.then( value => {
+                    if (this._done === true || typeof value === "undefined") {
+                        this._done = false;
+                    }else{
+                        this._data.push(value);
+                    }
+                    return new Promise((done, err) => fn.apply(null, [done, err, value])).catch(this._ups);
+                });
+                this._stack.push(this._promise);
+            });
+        }else{
+           throw new Error('ImpossiblePromise.then(:Function) requires a function(accept, reject, value) or other ImpossiblePromise');
+        }
 
         return this;
     }
@@ -114,7 +120,7 @@ class ImpossiblePromise {
 
         return this.then((done, err, something) => {
             if (this._data.length === 0) {
-                this._data.push(something)
+                this._data.push(something);
             }
             var result = fn.apply(null, this._data);
 

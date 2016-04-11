@@ -73,8 +73,78 @@ describe("new Sequence()", () => {
                     done();
                 });
             },200);
+        });
+
+        it("should accept impossible-promisses in .then()", (done) => {
+
+            var someMethod = function(){
+                return new Sequence((accept, reject) => {
+                    setTimeout(function() {
+                        accept("some")
+                    },100)
+                })
+            }
+
+            var otherMethod = function(){
+                return new Sequence((accept, reject) => {
+                    setTimeout(function() {
+                        accept("other")
+                    },100)
+                })
+            }
+
+
+            new Sequence((accept, reject) => {
+                accept("first")
+            })
+            .then(someMethod())
+            .then(otherMethod())
+            .done((first, some, other ) => {
+                assert.equal([first, some, other].join(" "),"first some other");
+                done()
+            });
 
         });
+
+        it("should accept impossible-promisses in .then() and deal with .done()", (done) => {
+
+            var someDoneMethod = function(){
+                return new Sequence((accept, reject) => {
+                    setTimeout(function() {
+                        accept("some")
+                    },100)
+                }).then((accept) => {
+                    accept('method')
+                }).then((accept) => {
+                    accept('called')
+                }).done( (some, method, called) => {
+                    return [some,method,called].join(" ");
+                })
+            }
+
+            var otherMethod = function(){
+                return new Sequence((accept, reject) => {
+                    setTimeout(function() {
+                        accept("then")
+                    },100)
+                }).then((accept, reject, other) => {
+                    accept(other + " other");
+                })
+            }
+
+
+            new Sequence((accept, reject) => {
+                accept("first")
+            })
+            .then(someDoneMethod())
+            .then(otherMethod())
+            .done((first, some, other ) => {
+                assert.equal([first, some, other].join(" "),"first some method called then other");
+                done()
+            });
+
+        });
+
     });
 
 
