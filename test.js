@@ -131,28 +131,28 @@ describe("new Sequence()", () => {
       var someMethod = function(){
         return new Sequence((accept) => {
           setTimeout(function() {
-            accept("some")
-          }, 100)
-        })
-      }
+            accept("some");
+          }, 100);
+        });
+      };
 
       var otherMethod = function(){
         return new Sequence((accept) => {
           setTimeout(function() {
-            accept("other")
-          }, 100)
-        })
-      }
+            accept("other");
+          }, 100);
+        });
+      };
 
 
       new Sequence((accept) => {
-        accept("first")
+        accept("first");
       })
       .then(someMethod())
       .then(otherMethod())
       .done((first, some, other ) => {
         assert.equal([first, some, other].join(" "), "first some other");
-        done()
+        done();
       });
 
     });
@@ -162,36 +162,36 @@ describe("new Sequence()", () => {
       var someDoneMethod = function(){
         return new Sequence((accept) => {
           setTimeout(function() {
-            accept("some")
-          },100)
+            accept("some");
+          },100);
         }).then((accept) => {
-          accept('method')
+          accept('method');
         }).then((accept) => {
-          accept('called')
+          accept('called');
         }).done( (some, method, called) => {
           return [some,method,called].join(" ");
-        })
-      }
+        });
+      };
 
       var otherMethod = function(){
         return new Sequence((accept) => {
             setTimeout(function() {
-              accept("then")
-            },100)
+              accept("then");
+            }, 100);
         }).then((accept, reject, other) => {
             accept(other + " other");
-        })
-      }
+        });
+      };
 
 
       new Sequence((accept) => {
-        accept("first")
+        accept("first");
       })
       .then(someDoneMethod())
       .then(otherMethod())
       .done((first, some, other ) => {
         assert.equal([first, some, other].join(" "), "first some method called then other");
-        done()
+        done();
       });
 
     });
