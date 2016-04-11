@@ -34,10 +34,15 @@ __check test.js for examples__
 
 ## TODO:
 - [ ] propper documentation
-- [ ] backwards compatibility
+- [x] backwards compatibility
 - [ ] browser compatibility
 - [ ] support for `Promise.race()`
 - [ ] support for `Promise.all()`
+- [x] added .promisify()
+- [x] added .pipe()
+- [x] allows new ImpossibePromise() without arguments
+- [x] allows .then(new ImpossibePromise())
+- [x] allows multiple .done()
 - [ ] write a CONTRIBUTING.file
 
 ## LICENSE
