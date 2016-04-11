@@ -1,6 +1,6 @@
 {
   "name": "impossible-promise",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "wrapper used to chain native Promises in an async sequence",
   "author": "Jonathan Tavares <jonathan@impossible.com>",
   "license": "MIT",
