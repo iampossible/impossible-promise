@@ -17,7 +17,7 @@ class ImpossiblePromise {
 
     if(typeof fn === 'undefined' || fn === null){
       process.nextTick(() => {
-        this._promise = new Promise((a) => a());
+        this._promise = Promise.resolve();
       });
     }else if (typeof fn === 'function') {
       process.nextTick(() => {
