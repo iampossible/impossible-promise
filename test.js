@@ -53,6 +53,48 @@ describe("new Sequence()", () => {
         });
 
     });
+
+    it("should be able to chain other methods", (done) => {
+
+      var someMethod = function(){
+        return new Sequence((accept) => {
+          setTimeout(function() {
+            accept("s");
+          }, 100);
+        }).then((accept) => {
+          setTimeout(function() {
+            accept("o");
+          }, 100);
+        }).then((accept) => {
+          setTimeout(function() {
+            accept("m");
+          }, 100);
+        }).then((accept) => {
+          setTimeout(function() {
+            accept("e");
+          }, 100);
+        }).done((s,o,m,e) =>{
+          return [s,o,m,e].join("");
+        });
+      };
+
+      var otherMethod = function(){
+        return new Sequence((accept) => {
+          setTimeout(function() {
+            accept("other");
+          }, 100);
+        });
+      };
+
+      new Sequence()
+        .then(someMethod())
+        .then(otherMethod())
+        .done((some, other) => {
+          assert.equal([some, other].join(" "), "some other");
+          done();
+        });
+
+    });
   });
 
 
@@ -349,6 +391,42 @@ describe("new Sequence()", () => {
         return hello+" world";
       }).done((helloworld) => {
         assert.equal(helloworld, "hello world");
+        done();
+      });
+    });
+
+
+    it("empty .done() should be just true", (done) => {
+
+      let someMethod = new Sequence((next) => next("hello") ).done();
+
+      new Sequence()
+      .then(someMethod)
+      .then((accept, reject, justTrue) => {
+        assert.equal(justTrue, true);
+        accept("value");
+      })
+      .done((justTrue, otherValue) => {
+        assert.equal(justTrue, true);
+        assert.equal(otherValue, 'value');
+        done();
+      });
+    });
+
+
+    it(".done(value) should return value", (done) => {
+
+      let someMethod = new Sequence((next) => next() ).done('hello world');
+
+      new Sequence()
+      .then(someMethod)
+      .then((accept, reject, helloworld) => {
+        assert.equal(helloworld, 'hello world');
+        accept("value");
+      })
+      .done((helloworld, otherValue) => {
+        assert.equal(helloworld, 'hello world');
+        assert.equal(otherValue, 'value');
         done();
       });
     });

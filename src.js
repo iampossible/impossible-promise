@@ -119,8 +119,14 @@ class ImpossiblePromise {
    *
    */
   done(fn) {
+    if (typeof fn === 'undefined') {
+      fn = true;
+    }
     if (typeof fn !== 'function') {
-      throw new Error('ImpossiblePromise.done(:Function) requires a syncronous function()');
+      let input = fn;
+      fn = function(){
+        return input;
+      };
     }
 
     return this.then((done, err, something) => {
