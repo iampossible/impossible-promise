@@ -1,4 +1,5 @@
 'use strict';
+/* globals process, module */
 /**
  * (IM)POSSIBLE PROMISE
  * wrapper used to chain native Promises in an async sequence
@@ -15,16 +16,16 @@ class ImpossiblePromise {
     this._done = false;
     this._ups = function() { /* noop! */ };
 
-    if(typeof fn === 'undefined' || fn === null){
+    if (typeof fn === 'undefined' || fn === null){
       process.nextTick(() => {
         this._promise = Promise.resolve();
       });
-    }else if (typeof fn === 'function') {
+    } else if (typeof fn === 'function') {
       process.nextTick(() => {
         this._promise = new Promise(fn).catch(this._ups);
         this._stack.push(this._promise);
       });
-    }else{
+    } else {
        throw new Error('ImpossiblePromise(:Function) requires a function to start a sequence');
     }
   }
@@ -35,9 +36,9 @@ class ImpossiblePromise {
    */
   then(fn) {
 
-    if(fn instanceof ImpossiblePromise){
+    if (fn instanceof ImpossiblePromise){
       //chains another ImpossibePromise
-      this.then((accept,reject) => {
+      this.then( accept => {
         fn.then((innerAccept, innerReject, lastValue) => {
           accept(lastValue);
         });
@@ -45,7 +46,7 @@ class ImpossiblePromise {
     } else if (typeof fn === 'function') {
       process.nextTick( () => {
         this._promise = this._promise.then( value => {
-          if (this._done === true || typeof value === "undefined") {
+          if (this._done === true || typeof value === 'undefined') {
             this._done = false;
           }else{
             this._data.push(value);
@@ -124,7 +125,7 @@ class ImpossiblePromise {
     }
     if (typeof fn !== 'function') {
       let input = fn;
-      fn = function(){
+      fn = function() {
         return input;
       };
     }
