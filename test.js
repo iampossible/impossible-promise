@@ -382,6 +382,34 @@ describe('new Sequence()', () => {
       });
     });
 
+    it('should have an argument for each done() called inside each then()', done => {
+
+      function methodThatGetsWorld(){
+        return new Sequence((accept, reject) =>{
+          accept("wor");
+        })
+        .then((accept, reject) =>{
+          accept("ld");
+        })
+        .done((wor,ld) =>{
+          return [wor,ld].join("");
+        });
+      }
+
+      new Sequence( next => {
+        next('hello');
+      })
+      .then(methodThatGetsWorld())
+      .then( next => {
+        next('!!');
+      }).done((hello, world, yuusss) => {
+        assert.equal(hello, 'hello');
+        assert.equal(world, 'world');
+        assert.equal(yuusss, '!!');
+        done();
+      });
+    });
+
     it('should not be done if there is an error', done => {
         new Sequence( next => {
           next('hello');
