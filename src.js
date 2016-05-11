@@ -14,6 +14,8 @@ class ImpossiblePromise {
     this._stack = [];
     this._data  = [];
     this._done = false;
+    this._stop = false;
+
     this._ups = function() { /* noop! */ };
 
     if (typeof fn === 'undefined' || fn === null){
@@ -51,9 +53,14 @@ class ImpossiblePromise {
           }else{
             this._data.push(value);
           }
-          return new Promise((done, err) => fn.apply(null, [done, err, value])).catch(this._ups);
-        });
 
+          if(this._stop){ //after an .error() should stop all .then calls
+            return Promise.reject()
+          }
+
+          return new Promise((done, err) => fn.apply(null, [done, err, value])).catch(this._ups);
+        })
+        
         this._stack.push(this._promise);
       });
     }else{
@@ -149,7 +156,10 @@ class ImpossiblePromise {
    *
    */
   error(fn) {
-    this._ups = fn;
+    this._ups = (e) => {
+      fn(e)
+      this._stop = true;
+    };
     return this;
   }
 }

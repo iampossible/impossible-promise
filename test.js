@@ -2,7 +2,7 @@
 /*globals require describe it*/
 
 const Sequence = require('./src.js');
-const assert = require('assert');
+const assert = require('chai').assert;
 
 //Helper asserts
 assert.runs = () => assert.ok(true, 'should run');
@@ -282,28 +282,75 @@ describe('new Sequence()', () => {
       }).error((reason) => {
         assert.runs();
         assert.equal(reason, 'ups!');
-      }).then((next, reject) => {
-        reject('ups!');
         done();
+      }).then((next, reject) => {
+        assert.doesNotRun()
+        reject('ups!');
       });
     });
 
 
-    it('any rejected promise shoudl interrupt the sequence', done => {
-      new Sequence( next => {
-        next();
-      }).error((reason) => {
-        assert.equal(reason, 'ups!');
-      }).then((next, reject) => {
-        reject('ups!');
-        next();
-        setTimeout(function(){
-          done();
-        }, 100);
-      }).then(() => {
-        //this should never ever be called because .error() interrupted the chain
-        assert.doesNotRun();
-      });
+    it('any rejected nested promise should interrupt the sequence', (done) => {
+      let timesErrorHandlerCalled = 0;
+      let reachesSecondThen = false;
+      let reachesDone = false;
+      let errorReason;
+
+      new Sequence()
+        .then((next, reject, data) => {
+          reject('i made a boo-boo')
+          accept('dont!')
+        })
+        .then((resolve, reject, data) => {
+          console.warn('if you see this, something is terribly wrong', data)
+          reachesSecondThen = true
+          accept('nope!')
+        })
+        .error((reason) => {
+          timesErrorHandlerCalled++;
+          errorReason = reason;
+        })
+        .done(() => {
+          reachesDone = true;
+        });
+
+      setTimeout(() => {
+        assert.equal(timesErrorHandlerCalled, 1);
+        assert.isFalse(reachesSecondThen);
+        assert.isFalse(reachesDone);
+        assert.equal(errorReason, 'i made a boo-boo')
+        done();
+      }, 2);
+    });
+
+    it('any rejected nested promise should interrupt the sequence', (done) => {
+      let timesErrorHandlerCalled = 0;
+      let reachesSecondThen = false;
+      let errorReason;
+
+      new Sequence()
+        .then((next, reject, data) => {
+          new Sequence(() => {
+            throw 'ups!'
+          }).then((innerNext) => {
+            innerNext(1)
+          }).error(reject).done(next)
+        })
+        .then((resolve, reject, data) => {
+          console.warn('if you see this, something is terribly wrong', data)
+          reachesSecondThen = true
+        })
+        .error((reason) => {
+          timesErrorHandlerCalled++;
+          errorReason = reason;
+        });
+
+      setTimeout(() => {
+        assert.equal(timesErrorHandlerCalled, 1);
+        assert.isFalse(reachesSecondThen);
+        assert.equal(errorReason, 'ups!')
+        done();
+      }, 2);
     });
 
     it('should catch exceptions and call .error()', done => {
