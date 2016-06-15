@@ -21,7 +21,7 @@ describe.only('.all() method', () => {
          setTimeout(()=> accept(time), time);
       };
     })).done(allValue => {
-      assert.equal(allValue.join(""),'102030');
+      assert.equal(allValue.join(''),'102030');
       done();
     });
 
@@ -34,7 +34,7 @@ describe.only('.all() method', () => {
          setTimeout(()=> accept(time), time);
       };
     })).done(allValue => {
-      assert.equal(allValue.join(""),'1040302050');
+      assert.equal(allValue.join(''),'1040302050');
       done();
     });
 
@@ -50,7 +50,7 @@ describe.only('.all() method', () => {
       let sum = arrValue.reduce( (a, b) => a+b);
       accept(sum);
     }).done((allValue, allSum) => {
-      assert.equal(allValue.join(""),'102030');
+      assert.equal(allValue.join(''),'102030');
       assert.equal(allSum,60);
       done();
     }).error( e => console.log.bind(console));
@@ -70,7 +70,7 @@ describe.only('.all() method', () => {
       accept(sum);
     }).done((one, allValue, allSum) => {
       assert.equal(one,1);
-      assert.equal(allValue.join(""),'112131');
+      assert.equal(allValue.join(''),'112131');
       assert.equal(allSum,63);
       done();
     });

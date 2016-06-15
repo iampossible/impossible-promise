@@ -32,13 +32,13 @@ describe('.done() method', () => {
 
     function methodThatGetsWorld(){
       return new Sequence((accept, reject) =>{
-        accept("wor");
+        accept('wor');
       })
       .then((accept, reject) =>{
-        accept("ld");
+        accept('ld');
       })
       .done((wor,ld) =>{
-        return [wor,ld].join("");
+        return [wor,ld].join('');
       });
     }
 
