@@ -10,8 +10,8 @@
     "url": "git://github.com/iampossible/impossible-promise.git"
   },
   "scripts": {
-    "test": "mocha test.js",
-    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage && rm -rf ./coverage"
+    "test": "mocha tests/",
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha tests/ --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage && rm -rf ./coverage"
   },
   "engines": {
     "node": ">=4.3.2"
