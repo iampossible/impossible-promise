@@ -37,7 +37,7 @@ __check test.js for examples__
 - [x] backwards compatibility
 - [ ] browser compatibility
 - [ ] support for `Promise.race()`
-- [ ] support for `Promise.all()`
+- [x] support for `Promise.all()`
 - [x] added .promisify()
 - [x] added .pipe()
 - [x] allows new ImpossibePromise() without arguments
