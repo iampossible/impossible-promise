@@ -54,7 +54,7 @@ describe('.error() method', () => {
       assert.equal(reason, 'ups!');
       done();
     }).then((next, reject) => {
-      assert.doesNotRun()
+      assert.doesNotRun();
       reject('ups!');
     });
   });
@@ -68,13 +68,13 @@ describe('.error() method', () => {
 
     new Sequence()
       .then((next, reject, data) => {
-        reject('i made a boo-boo')
-        accept('dont!')
+        reject('i made a boo-boo');
+        next('dont!');
       })
       .then((resolve, reject, data) => {
-        console.warn('if you see this, something is terribly wrong', data)
-        reachesSecondThen = true
-        accept('nope!')
+        console.warn('if you see this, something is terribly wrong', data);
+        reachesSecondThen = true;
+        resolve('nope!');
       })
       .error((reason) => {
         timesErrorHandlerCalled++;
@@ -88,7 +88,7 @@ describe('.error() method', () => {
       assert.equal(timesErrorHandlerCalled, 1);
       assert.isFalse(reachesSecondThen);
       assert.isFalse(reachesDone);
-      assert.equal(errorReason, 'i made a boo-boo')
+      assert.equal(errorReason, 'i made a boo-boo');
       done();
     }, 2);
   });
@@ -101,14 +101,14 @@ describe('.error() method', () => {
     new Sequence()
       .then((next, reject, data) => {
         new Sequence(() => {
-          throw 'ups!'
+          throw 'ups!';
         }).then((innerNext) => {
-          innerNext(1)
-        }).error(reject).done(next)
+          innerNext(1);
+        }).error(reject).done(next);
       })
       .then((resolve, reject, data) => {
-        console.warn('if you see this, something is terribly wrong', data)
-        reachesSecondThen = true
+        console.warn('if you see this, something is terribly wrong', data);
+        reachesSecondThen = true;
       })
       .error((reason) => {
         timesErrorHandlerCalled++;
@@ -118,7 +118,7 @@ describe('.error() method', () => {
     setTimeout(() => {
       assert.equal(timesErrorHandlerCalled, 1);
       assert.isFalse(reachesSecondThen);
-      assert.equal(errorReason, 'ups!')
+      assert.equal(errorReason, 'ups!');
       done();
     }, 2);
   });

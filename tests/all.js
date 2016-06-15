@@ -12,9 +12,9 @@ assert.isUndefined = (value) =>  assert.equal(typeof value, 'undefined');
 
 
 
-describe.only('.all() method', () => {
+describe('.all() method', () => {
 
-  it.only('should run all promisses', done => {
+  it('should run all promisses', done => {
 
     new Sequence().all([10,20,30].map( time => {
       return function(accept, reject){
