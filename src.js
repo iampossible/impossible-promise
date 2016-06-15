@@ -32,6 +32,40 @@ class ImpossiblePromise {
     }
   }
 
+
+
+  /**
+   * description
+   *
+   */
+  all(fnArray) {
+
+    if(fnArray instanceof Array){
+      process.nextTick( () => {
+        this._promise = this._promise.then( value => {
+          if (this._done === true || typeof value === 'undefined') {
+            this._done = false;
+          }else{
+            this._data.push(value);
+          }
+
+          if(this._stop){ //after an .error() should stop all .then calls
+            return Promise.reject();
+          }
+
+          return Promise.all(fnArray.map(fn => {
+            return new Promise((acceptFn, rejectFn) => fn.apply(null, [acceptFn, rejectFn, value])).catch(this._ups);
+          })).catch(this._ups);
+        });
+
+        this._stack.push(this._promise);
+      });
+    }else{
+       throw new Error('ImpossiblePromise.all(:Array) requires an array)');
+    }
+
+    return this;
+  }
   /**
    * description
    *
@@ -55,12 +89,12 @@ class ImpossiblePromise {
           }
 
           if(this._stop){ //after an .error() should stop all .then calls
-            return Promise.reject()
+            return Promise.reject();
           }
 
-          return new Promise((done, err) => fn.apply(null, [done, err, value])).catch(this._ups);
-        })
-        
+          return new Promise((acceptFn, rejectFn) => fn.apply(null, [acceptFn, rejectFn, value])).catch(this._ups);
+        });
+
         this._stack.push(this._promise);
       });
     }else{
@@ -157,7 +191,7 @@ class ImpossiblePromise {
    */
   error(fn) {
     this._ups = (e) => {
-      fn(e)
+      fn(e);
       this._stop = true;
     };
     return this;
