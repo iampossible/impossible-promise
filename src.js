@@ -16,7 +16,9 @@ class ImpossiblePromise {
     this._done = false;
     this._stop = false;
 
-    this._ups = function() { /* noop! */ };
+    this._ups = function() {
+      this._stop = true;
+    };
 
     if (typeof fn === 'undefined' || fn === null){
       process.nextTick(() => {

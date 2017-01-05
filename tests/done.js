@@ -72,6 +72,22 @@ describe('.done() method', () => {
       });
   });
 
+  it('should not be done if there is an error but no error handler', done => {
+      new Sequence( next => {
+        next('hello');
+      }).then((next,reject) => {
+        done()
+        reject('world');
+      }).then( next => {
+        done() //if done() gets called a second time, the test fails
+        next('!!');
+      }).done(() => {
+        done() //if done() gets called a second time, the test fails
+        //this should never ever be called because .error() interrupted the chain
+        assert.doesNotRun();
+      });
+  });
+
 
   it('should start a new Sequence if .then() is used after .done()', done => {
     new Sequence( next => {
